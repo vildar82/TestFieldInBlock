@@ -19,7 +19,7 @@ namespace TestFieldInBlock
             // Создане нового блока
             var btr = new BlockTableRecord
             {
-                Name = "Test", // Guid.NewGuid().ToString()
+                Name = Guid.NewGuid().ToString()
             };
 
             var bt = (BlockTable) db.BlockTableId.GetObject(OpenMode.ForWrite);
