@@ -68,19 +68,9 @@ namespace TestFieldInBlock
                     continue;
 
                 var atrRef = new AttributeReference();
-                atrRef.SetAttributeFromBlock(atrDef, blRef.BlockTransform);
                 blRef.AttributeCollection.AppendAttribute(atrRef);
                 t.AddNewlyCreatedDBObject(atrRef, true);
-
-                var fieldValue = atrRef.getTextWithFieldCodes();
-                if (fieldValue.Contains("?BlockRefId"))
-                {
-                    fieldValue = fieldValue.Replace("?BlockRefId", $@"%<\_ObjId {blRef.Id.OldIdPtr.ToInt64()}>%");
-                    var fieldId = atrRef.GetField();
-                    var field = (Field) fieldId.GetObject(OpenMode.ForWrite);
-                    field.SetFieldCode(fieldValue);
-                    field.Evaluate();
-                }
+                atrRef.SetAttributeFromBlock(atrDef, blRef.BlockTransform);
             }
         }
     }
