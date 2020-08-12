@@ -17,22 +17,41 @@ namespace TestFieldInBlock
             using var t = doc.TransactionManager.StartTransaction();
 
             // Создане нового блока
-            var block = new BlockTableRecord
+            var btr = new BlockTableRecord
             {
-                Name = Guid.NewGuid().ToString()
+                Name = "Test", // Guid.NewGuid().ToString()
             };
 
             var bt = (BlockTable) db.BlockTableId.GetObject(OpenMode.ForWrite);
-            bt.Add(block);
-            t.AddNewlyCreatedDBObject(block, true);
+            bt.Add(btr);
+            t.AddNewlyCreatedDBObject(btr, true);
 
             // Добавление окна в блок
             var btrWindowId = bt["Окно"];
-            var blRef = new BlockReference(Point3d.Origin, btrWindowId);
-            block.AppendEntity(blRef);
+            var blRefWindow = new BlockReference(Point3d.Origin, btrWindowId);
+            btr.AppendEntity(blRefWindow);
+            t.AddNewlyCreatedDBObject(blRefWindow, true);
+
+            // Добавление полилини котнура в блок
+            var pl = new Polyline();
+            pl.AddVertexAt(0, new Point2d(-1000, 0), 0, 0, 0);
+            pl.AddVertexAt(0, new Point2d(1000, 0), 0, 0, 0);
+            pl.AddVertexAt(0, new Point2d(1000, 300), 0, 0, 0);
+            pl.AddVertexAt(0, new Point2d(-1000, 300), 0, 0, 0);
+            pl.Closed = true;
+            btr.AppendEntity(pl);
+            t.AddNewlyCreatedDBObject(pl, true);
 
             // Добавление атрибутов в блок окна
-            AddAttributes(blRef, btrWindowId, t);
+            AddAttributes(blRefWindow, btrWindowId, t);
+
+            // Вставка созданного блока
+            var pt = doc.Editor.GetPoint("Точка вставки").Value;
+            var blRef = new BlockReference(pt, btr.Id);
+            var cs = (BlockTableRecord) db.CurrentSpaceId.GetObject(OpenMode.ForWrite);
+            cs.AppendEntity(blRef);
+            t.AddNewlyCreatedDBObject(blRef, true);
+
             t.Commit();
         }
 
