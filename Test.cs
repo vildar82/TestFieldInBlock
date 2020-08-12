@@ -67,7 +67,7 @@ namespace TestFieldInBlock
                 if (atrDef.Constant)
                     continue;
 
-                using var atrRef = new AttributeReference();
+                var atrRef = new AttributeReference();
                 atrRef.SetAttributeFromBlock(atrDef, blRef.BlockTransform);
                 blRef.AttributeCollection.AppendAttribute(atrRef);
                 t.AddNewlyCreatedDBObject(atrRef, true);
